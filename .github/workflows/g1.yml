@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Use the addition result and perform multiplication
         run: |
-          VAR3=3  # Define VAR3 again, or use from environment if set globally
+          VAR3=3  # Define VAR3 again, or use it from environment if set globally
           ADD_RESULT=${{ needs.addition.outputs.addResult }}  # Fetch output from the previous job
           MULTIPLY_RESULT=$(( ADD_RESULT * VAR3 ))
-          echo "Multiplication result:
+          echo "Multiplication result: $MULTIPLY_RESULT"
