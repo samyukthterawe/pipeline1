@@ -1,0 +1,38 @@
+name: Two-Stage Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  addition:
+    runs-on: ubuntu-latest
+    outputs:
+      addResult: ${{ steps.addition.outputs.result }}  # Output for the second job
+
+    steps:
+      - name: Set up environment variables
+        run: |
+          echo "VAR1=5" >> $GITHUB_ENV
+          echo "VAR2=10" >> $GITHUB_ENV
+          echo "VAR3=3" >> $GITHUB_ENV
+
+      - name: Perform addition
+        id: addition  # Assign an ID to reference in outputs
+        run: |
+          RESULT=$(( $VAR1 + $VAR2 ))
+          echo "Addition result: $RESULT"
+          echo "::set-output name=result::$RESULT"  # Store the result as output for the next job
+
+  multiplication:
+    needs: addition  # Ensure this job runs after 'addition' job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Use the addition result and perform multiplication
+        run: |
+          VAR3=3  # Define VAR3 again, or use from environment if set globally
+          ADD_RESULT=${{ needs.addition.outputs.addResult }}  # Fetch output from the previous job
+          MULTIPLY_RESULT=$(( ADD_RESULT * VAR3 ))
+          echo "Multiplication result:
